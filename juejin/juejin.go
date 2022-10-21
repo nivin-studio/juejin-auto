@@ -67,7 +67,7 @@ func (j *JueJin) CheckIn() *JueJin {
 		return j.AddResult(fmt.Sprintf("😔 签到失败\n❓ 失败原因: %s", result.ErrMsg))
 	}
 
-	return j.AddResult(fmt.Sprintf("😊 签到成功\n💎 获得矿石: %d\n💎 全部矿石: %d", data.IncrPoint, data.SumPoint))
+	return j.AddResult(fmt.Sprintf("😊 签到成功🎉🎉🎉\n💎 获得矿石: %d\n💎 全部矿石: %d", data.IncrPoint, data.SumPoint))
 }
 
 func (j *JueJin) Lottery() *JueJin {
@@ -90,7 +90,7 @@ func (j *JueJin) Lottery() *JueJin {
 		return j
 	}
 
-	return j.AddResult(fmt.Sprintf("😊 抽奖成功\n🎁 成功获得: %s", data.LotteryName))
+	return j.AddResult(fmt.Sprintf("😊 抽奖成功🎉🎉🎉\n🎁 成功获得: %s", data.LotteryName))
 }
 
 func (j *JueJin) GetLuckyUsers() ([]LuckyUser, error) {
@@ -138,7 +138,7 @@ func (j *JueJin) DipLucky() *JueJin {
 		return j.AddResult(fmt.Sprintf("😔 沾沾失败\n❓ 失败原因: %s", result.ErrMsg))
 	}
 
-	return j.AddResult(fmt.Sprintf("😊 沾沾成功\n🍀 沾到幸运: %d\n🍀 当前幸运: %d", data.DipValue, data.TotalValue))
+	return j.AddResult(fmt.Sprintf("😊 沾沾成功🎉🎉🎉\n🍀 沾到幸运: %d\n🍀 当前幸运: %d", data.DipValue, data.TotalValue))
 }
 
 func (j *JueJin) GetBugs() (*[]Bug, error) {
