@@ -36,7 +36,7 @@ func (rb *Robot) sign(t int64, secret string) string {
 
 func (rb *Robot) GetUrl() (string, error) {
 	if rb.Webhook == "" {
-		return "", errors.New("Robot 'url' is not set!")
+		return "", errors.New("钉钉机器人Webhook未设置")
 	}
 
 	if rb.Secret == "" {
@@ -74,12 +74,12 @@ func (rb *Robot) SendMessage(m *Message) error {
 		Post(url)
 
 	if err != nil {
-		return fmt.Errorf("send message err: %s, message: %s", err, m.Marshaler())
+		return fmt.Errorf("消息发送失败: %s, 消息: %s", err, m.Marshaler())
 	}
 
 	code := jsoniter.Get(resp.Body(), "errcode").ToInt()
 	if code != 0 {
-		return fmt.Errorf("send message err: %s, message: %s", resp.Body(), m.Marshaler())
+		return fmt.Errorf("消息发送失败: %s, 消息: %s", resp.Body(), m.Marshaler())
 	}
 
 	return nil

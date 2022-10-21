@@ -7,32 +7,32 @@ import (
 )
 
 func TestCheckIn(t *testing.T) {
-	juejin := New(os.Getenv("JUEJIN_COOKIE"))
+	juejin := New().SetCookie(os.Getenv("JUEJIN_COOKIE"))
 
-	result := juejin.CheckIn()
+	result := juejin.CheckIn().GetResult()
 
 	fmt.Print(result)
 }
 
 func TestLottery(t *testing.T) {
-	juejin := New(os.Getenv("JUEJIN_COOKIE"))
+	juejin := New().SetCookie(os.Getenv("JUEJIN_COOKIE"))
 
-	result := juejin.Lottery()
+	result := juejin.Lottery().GetResult()
 
 	fmt.Print(result)
 }
 
 func TestDipLucky(t *testing.T) {
-	juejin := New(os.Getenv("JUEJIN_COOKIE"))
+	juejin := New().SetCookie(os.Getenv("JUEJIN_COOKIE"))
 
-	result := juejin.DipLucky()
+	result := juejin.DipLucky().GetResult()
 
 	fmt.Print(result)
 }
 
 func TestCollectBug(t *testing.T) {
-	juejin := New(os.Getenv("JUEJIN_COOKIE"))
+	juejin := New().SetCookie(os.Getenv("JUEJIN_COOKIE"))
 
-	result := juejin.CollectBug()
+	result := juejin.CollectBug().GetResult()
 	fmt.Print(result)
 }

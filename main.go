@@ -8,15 +8,13 @@ import (
 )
 
 func main() {
-	juejin := juejin.New(os.Getenv("JUEJIN_COOKIE"))
-
-	message := fmt.Sprintf(
-		"%s\n\n%s\n\n%s\n\n%s",
-		juejin.CheckIn(),
-		juejin.Lottery(),
-		juejin.DipLucky(),
-		juejin.CollectBug(),
-	)
+	message := juejin.New().
+		SetCookie(os.Getenv("JUEJIN_COOKIE")).
+		CheckIn().
+		Lottery().
+		DipLucky().
+		CollectBug().
+		GetResult()
 
 	robot := dingtalk.NewRobot().
 		SetWebhook(os.Getenv("DINGTALK_WEBHOOK")).
@@ -27,5 +25,5 @@ func main() {
 		fmt.Println(err)
 	}
 
-	fmt.Println("Hello, 世界")
+	fmt.Println("Hello, 世界!")
 }

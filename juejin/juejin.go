@@ -19,22 +19,39 @@ const (
 )
 
 type JueJin struct {
+	Result string        `json:"result"`
 	Client *resty.Client `json:"client"`
 }
 
-func New(cookie string) *JueJin {
-	client := resty.New()
-	client.SetHeader("cookie", cookie)
-
-	return &JueJin{
-		Client: client,
+func New() *JueJin {
+	j := &JueJin{
+		Result: "",
+		Client: resty.New(),
 	}
+
+	return j
 }
 
-func (j *JueJin) CheckIn() string {
+func (j *JueJin) SetCookie(cookie string) *JueJin {
+	j.Client.SetHeader("cookie", cookie)
+
+	return j
+}
+
+func (j *JueJin) AddResult(s string) *JueJin {
+	j.Result += s + "\n\n"
+
+	return j
+}
+
+func (j *JueJin) GetResult() string {
+	return j.Result
+}
+
+func (j *JueJin) CheckIn() *JueJin {
 	resp, err := j.Client.R().Post(CHECKIN_API)
 	if err != nil {
-		return fmt.Sprintf("😔 签到失败\n❓ 失败原因: %s", err)
+		return j.AddResult(fmt.Sprintf("😔 签到失败\n❓ 失败原因: %s", err))
 	}
 
 	var result Response
@@ -42,21 +59,21 @@ func (j *JueJin) CheckIn() string {
 
 	err = json.Unmarshal(resp.Body(), &result)
 	if err != nil {
-		return fmt.Sprintf("😔 签到失败\n❓ 失败原因: %s", err)
+		return j.AddResult(fmt.Sprintf("😔 签到失败\n❓ 失败原因: %s", err))
 	}
 
 	data, ok := result.Data.(*CheckIn)
 	if !ok && result.ErrNo != 0 {
-		return fmt.Sprintf("😔 签到失败\n❓ 失败原因: %s", result.ErrMsg)
+		return j.AddResult(fmt.Sprintf("😔 签到失败\n❓ 失败原因: %s", result.ErrMsg))
 	}
 
-	return fmt.Sprintf("😊 签到成功\n💎 获得矿石: %d\n💎 全部矿石: %d", data.IncrPoint, data.SumPoint)
+	return j.AddResult(fmt.Sprintf("😊 签到成功\n💎 获得矿石: %d\n💎 全部矿石: %d", data.IncrPoint, data.SumPoint))
 }
 
-func (j *JueJin) Lottery() string {
+func (j *JueJin) Lottery() *JueJin {
 	resp, err := j.Client.R().Post(LOTTERY_API)
 	if err != nil {
-		return fmt.Sprintf("😔 抽奖失败\n❓ 失败原因: %s", err)
+		return j.AddResult(fmt.Sprintf("😔 抽奖失败\n❓ 失败原因: %s", err))
 	}
 
 	var result Response
@@ -64,15 +81,16 @@ func (j *JueJin) Lottery() string {
 
 	err = json.Unmarshal(resp.Body(), &result)
 	if err != nil {
-		return fmt.Sprintf("😔 抽奖失败\n❓ 失败原因: %s", err)
+		return j.AddResult(fmt.Sprintf("😔 抽奖失败\n❓ 失败原因: %s", err))
 	}
 
 	data, ok := result.Data.(*LotteryDraw)
 	if !ok && result.ErrNo != 0 {
-		return fmt.Sprintf("😔 抽奖失败\n❓ 失败原因: %s", result.ErrMsg)
+		j.Result += fmt.Sprintf("😔 抽奖失败\n❓ 失败原因: %s", result.ErrMsg)
+		return j
 	}
 
-	return fmt.Sprintf("😊 抽奖成功\n🎁 成功获得: %s", data.LotteryName)
+	return j.AddResult(fmt.Sprintf("😊 抽奖成功\n🎁 成功获得: %s", data.LotteryName))
 }
 
 func (j *JueJin) GetLuckyUsers() ([]LuckyUser, error) {
@@ -97,10 +115,10 @@ func (j *JueJin) GetLuckyUsers() ([]LuckyUser, error) {
 	return data.LuckyUser, nil
 }
 
-func (j *JueJin) DipLucky() string {
+func (j *JueJin) DipLucky() *JueJin {
 	luckyUsers, err := j.GetLuckyUsers()
 	if err != nil {
-		return fmt.Sprintf("😔 沾沾失败\n❓ 失败原因: %s", err)
+		return j.AddResult(fmt.Sprintf("😔 沾沾失败\n❓ 失败原因: %s", err))
 	}
 
 	resp, err := j.Client.R().SetBody(map[string]interface{}{
@@ -112,15 +130,15 @@ func (j *JueJin) DipLucky() string {
 
 	err = json.Unmarshal(resp.Body(), &result)
 	if err != nil {
-		return fmt.Sprintf("😔 沾沾失败\n❓ 失败原因: %s", err)
+		return j.AddResult(fmt.Sprintf("😔 沾沾失败\n❓ 失败原因: %s", err))
 	}
 
-	data, ok := result.Data.(*DipLucky)
-	if !ok && result.ErrNo != 0 {
-		return fmt.Sprintf("😔 沾沾失败\n❓ 失败原因: %s", result.ErrMsg)
+	data, _ := result.Data.(*DipLucky)
+	if result.ErrNo != 0 {
+		return j.AddResult(fmt.Sprintf("😔 沾沾失败\n❓ 失败原因: %s", result.ErrMsg))
 	}
 
-	return fmt.Sprintf("😊 沾沾成功\n🍀 沾到幸运: %d\n🍀 当前幸运: %d", data.DipValue, data.TotalValue)
+	return j.AddResult(fmt.Sprintf("😊 沾沾成功\n🍀 沾到幸运: %d\n🍀 当前幸运: %d", data.DipValue, data.TotalValue))
 }
 
 func (j *JueJin) GetBugs() (*[]Bug, error) {
@@ -145,14 +163,14 @@ func (j *JueJin) GetBugs() (*[]Bug, error) {
 	return data, nil
 }
 
-func (j *JueJin) CollectBug() string {
+func (j *JueJin) CollectBug() *JueJin {
 	bugList, err := j.GetBugs()
 	if err != nil {
-		return fmt.Sprintf("😔 BugFix失败\n❓ 失败原因: %s", err)
+		return j.AddResult(fmt.Sprintf("😔 BugFix失败\n❓ 失败原因: %s", err))
 	}
 
 	if len(*bugList) == 0 {
-		return fmt.Sprintf("😔 BugFix失败\n❓ 失败原因: 没有可fix的bug！")
+		return j.AddResult(fmt.Sprintf("😔 BugFix失败\n❓ 失败原因: 没有可fix的bug!"))
 	}
 
 	for _, v := range *bugList {
@@ -163,5 +181,5 @@ func (j *JueJin) CollectBug() string {
 
 	}
 
-	return fmt.Sprintf("😊 BugFix完成🎉🎉🎉")
+	return j.AddResult(fmt.Sprintf("😊 BugFix完成🎉🎉🎉"))
 }
