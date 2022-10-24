@@ -1,4 +1,4 @@
-module juejin-checkin
+module github.com/nivin-studio/juejin-auto
 
 go 1.18
 

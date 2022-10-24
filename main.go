@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"juejin-checkin/dingtalk"
-	"juejin-checkin/juejin"
 	"os"
+
+	"github.com/nivin-studio/juejin-auto/dingtalk"
+	"github.com/nivin-studio/juejin-auto/juejin"
 )
 
 func main() {
