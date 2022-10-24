@@ -141,7 +141,7 @@ func (j *JueJin) DipLucky() *JueJin {
 	return j.AddResult(fmt.Sprintf("😊 沾沾成功\n🍀 沾到幸运: %d\n🍀 当前幸运: %d", data.DipValue, data.TotalValue))
 }
 
-func (j *JueJin) GetBugs() (*[]Bug, error) {
+func (j *JueJin) GetBugs() ([]Bug, error) {
 	resp, err := j.Client.R().Post(NOT_COLLECT_API)
 	if err != nil {
 		return nil, err
@@ -155,7 +155,7 @@ func (j *JueJin) GetBugs() (*[]Bug, error) {
 		return nil, err
 	}
 
-	data, ok := result.Data.(*[]Bug)
+	data, ok := result.Data.([]Bug)
 	if !ok && result.ErrNo != 0 {
 		return nil, errors.New(result.ErrMsg)
 	}
@@ -164,21 +164,23 @@ func (j *JueJin) GetBugs() (*[]Bug, error) {
 }
 
 func (j *JueJin) CollectBug() *JueJin {
-	bugList, err := j.GetBugs()
-	if err != nil {
-		return j.AddResult(fmt.Sprintf("😔 BugFix失败\n❓ 失败原因: %s", err))
-	}
 
-	if len(*bugList) == 0 {
-		return j.AddResult(fmt.Sprintf("😔 BugFix失败\n❓ 失败原因: 没有可fix的bug！"))
-	}
+	for {
+		bugList, err := j.GetBugs()
+		if err != nil {
+			return j.AddResult(fmt.Sprintf("😔 BugFix失败\n❓ 失败原因: %s", err))
+		}
 
-	for _, v := range *bugList {
-		j.Client.R().SetBody(map[string]interface{}{
-			"bug_time": v.BugTime,
-			"bug_type": v.BugType,
-		}).Post(COLLECT_API)
+		if len(bugList) == 0 {
+			break
+		}
 
+		for _, v := range bugList {
+			j.Client.R().SetBody(map[string]interface{}{
+				"bug_time": v.BugTime,
+				"bug_type": v.BugType,
+			}).Post(COLLECT_API)
+		}
 	}
 
 	return j.AddResult(fmt.Sprintf("😊 BugFix完成🎉🎉🎉"))
