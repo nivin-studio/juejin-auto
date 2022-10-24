@@ -141,46 +141,53 @@ func (j *JueJin) DipLucky() *JueJin {
 	return j.AddResult(fmt.Sprintf("😊 沾沾成功\n🍀 沾到幸运: %d\n🍀 当前幸运: %d", data.DipValue, data.TotalValue))
 }
 
-func (j *JueJin) GetBugs() (*[]Bug, error) {
-	resp, err := j.Client.R().Post(NOT_COLLECT_API)
-	if err != nil {
-		return nil, err
-	}
-
-	var result Response
-	result.Data = new([]Bug)
-
-	err = json.Unmarshal(resp.Body(), &result)
-	if err != nil {
-		return nil, err
-	}
-
-	data, _ := result.Data.(*[]Bug)
-	if result.ErrNo != 0 {
-		return nil, errors.New(result.ErrMsg)
-	}
-
-	return data, nil
-}
-
-func (j *JueJin) CollectBug() *JueJin {
+func (j *JueJin) GetBugs() ([]Bug, error) {
+	var bugs []Bug
 
 	for {
-		bugList, err := j.GetBugs()
+		resp, err := j.Client.R().Post(NOT_COLLECT_API)
 		if err != nil {
-			return j.AddResult(fmt.Sprintf("😔 BugFix失败\n❓ 失败原因: %s", err))
+			return nil, err
 		}
 
-		if len(*bugList) == 0 {
+		var result Response
+		result.Data = new([]Bug)
+
+		err = json.Unmarshal(resp.Body(), &result)
+		if err != nil {
+			return nil, err
+		}
+
+		data, _ := result.Data.(*[]Bug)
+		if result.ErrNo != 0 {
+			return nil, errors.New(result.ErrMsg)
+		}
+
+		if len(*data) == 0 {
 			break
 		}
 
-		for _, v := range *bugList {
-			j.Client.R().SetBody(map[string]interface{}{
-				"bug_time": v.BugTime,
-				"bug_type": v.BugType,
-			}).Post(COLLECT_API)
-		}
+		bugs = append(bugs, *data...)
+	}
+
+	return bugs, nil
+}
+
+func (j *JueJin) CollectBug() *JueJin {
+	bugs, err := j.GetBugs()
+	if err != nil {
+		return j.AddResult(fmt.Sprintf("😔 BugFix失败\n❓ 失败原因: %s", err))
+	}
+
+	if len(bugs) == 0 {
+		return j.AddResult(fmt.Sprintf("😔 BugFix失败\n❓ 失败原因: 没有可fix的bug!"))
+	}
+
+	for _, v := range bugs {
+		j.Client.R().SetBody(map[string]interface{}{
+			"bug_time": v.BugTime,
+			"bug_type": v.BugType,
+		}).Post(COLLECT_API)
 	}
 
 	return j.AddResult(fmt.Sprintf("😊 BugFix完成🎉🎉🎉"))
