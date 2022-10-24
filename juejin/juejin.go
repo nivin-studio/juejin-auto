@@ -23,6 +23,7 @@ type JueJin struct {
 	Client *resty.Client `json:"client"`
 }
 
+// 创建掘金实例
 func New() *JueJin {
 	j := &JueJin{
 		Result: "",
@@ -32,22 +33,26 @@ func New() *JueJin {
 	return j
 }
 
+// 设置cookie
 func (j *JueJin) SetCookie(cookie string) *JueJin {
 	j.Client.SetHeader("cookie", cookie)
 
 	return j
 }
 
+// 添加结果
 func (j *JueJin) AddResult(s string) *JueJin {
 	j.Result += s + "\n\n"
 
 	return j
 }
 
+// 获取结果
 func (j *JueJin) GetResult() string {
 	return j.Result
 }
 
+// 签到
 func (j *JueJin) CheckIn() *JueJin {
 	resp, err := j.Client.R().Post(CHECKIN_API)
 	if err != nil {
@@ -70,6 +75,7 @@ func (j *JueJin) CheckIn() *JueJin {
 	return j.AddResult(fmt.Sprintf("😊 签到成功\n💎 获得矿石: %d\n💎 全部矿石: %d", data.IncrPoint, data.SumPoint))
 }
 
+// 抽奖
 func (j *JueJin) Lottery() *JueJin {
 	resp, err := j.Client.R().Post(LOTTERY_API)
 	if err != nil {
@@ -93,6 +99,7 @@ func (j *JueJin) Lottery() *JueJin {
 	return j.AddResult(fmt.Sprintf("😊 抽奖成功\n🎁 成功获得: %s", data.LotteryName))
 }
 
+// 获取幸运用户
 func (j *JueJin) GetLuckyUsers() ([]LuckyUser, error) {
 	resp, err := j.Client.R().Post(GLOBAL_BIG_API)
 	if err != nil {
@@ -115,6 +122,7 @@ func (j *JueJin) GetLuckyUsers() ([]LuckyUser, error) {
 	return data.LuckyUser, nil
 }
 
+// 沾喜气
 func (j *JueJin) DipLucky() *JueJin {
 	luckyUsers, err := j.GetLuckyUsers()
 	if err != nil {
@@ -141,6 +149,7 @@ func (j *JueJin) DipLucky() *JueJin {
 	return j.AddResult(fmt.Sprintf("😊 沾沾成功\n🍀 沾到幸运: %d\n🍀 当前幸运: %d", data.DipValue, data.TotalValue))
 }
 
+// 获取未收集BUG
 func (j *JueJin) GetBugs() ([]Bug, error) {
 	var bugs []Bug
 
@@ -173,6 +182,7 @@ func (j *JueJin) GetBugs() ([]Bug, error) {
 	return bugs, nil
 }
 
+// 收集BUG
 func (j *JueJin) CollectBug() *JueJin {
 	bugs, err := j.GetBugs()
 	if err != nil {

@@ -18,6 +18,7 @@ type Robot struct {
 	Secret  string
 }
 
+// 创建钉钉机器人实例
 func NewRobot() *Robot {
 	return &Robot{
 		Webhook: "",
@@ -25,6 +26,7 @@ func NewRobot() *Robot {
 	}
 }
 
+// 签名
 func (rb *Robot) sign(t int64, secret string) string {
 	strHash := fmt.Sprintf("%d\n%s", t, secret)
 	hmac256 := hmac.New(sha256.New, []byte(secret))
@@ -34,6 +36,7 @@ func (rb *Robot) sign(t int64, secret string) string {
 	return base64.StdEncoding.EncodeToString(data)
 }
 
+// 获取请求地址
 func (rb *Robot) GetUrl() (string, error) {
 	if rb.Webhook == "" {
 		return "", errors.New("钉钉机器人Webhook未设置")
@@ -52,16 +55,19 @@ func (rb *Robot) GetUrl() (string, error) {
 	}
 }
 
+// 设置webhook地址
 func (rb *Robot) SetWebhook(webhook string) *Robot {
 	rb.Webhook = webhook
 	return rb
 }
 
+// 设置签名密钥
 func (rb *Robot) SetSecret(secret string) *Robot {
 	rb.Secret = secret
 	return rb
 }
 
+// 发送消息
 func (rb *Robot) SendMessage(m *Message) error {
 	url, err := rb.GetUrl()
 	if err != nil {

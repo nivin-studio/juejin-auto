@@ -39,6 +39,7 @@ type Message struct {
 	At       *AtMessage       `json:"at,omitempty"`
 }
 
+// 创建文本消息
 func NewTextMessage(content string) *Message {
 	message := &Message{
 		MsgType: MsgTypeText,
@@ -50,6 +51,7 @@ func NewTextMessage(content string) *Message {
 	return message
 }
 
+// 创建链接消息
 func NewLinkMessage(title string, text string, picUrl string, messageUrl string) *Message {
 	message := &Message{
 		MsgType: MsgTypeLink,
@@ -64,6 +66,7 @@ func NewLinkMessage(title string, text string, picUrl string, messageUrl string)
 	return message
 }
 
+// 创建markdown消息
 func NewMarkdownMessage(title string, text string) *Message {
 	message := &Message{
 		MsgType: MsgTypeMarkdown,
@@ -76,6 +79,7 @@ func NewMarkdownMessage(title string, text string) *Message {
 	return message
 }
 
+// @所有人
 func (m *Message) AtAll() *Message {
 	m.At = &AtMessage{
 		IsAtAll: true,
@@ -84,6 +88,7 @@ func (m *Message) AtAll() *Message {
 	return m
 }
 
+// @指定用户
 func (m *Message) AtMobiles(mobiles ...string) *Message {
 	m.At = &AtMessage{}
 
@@ -92,6 +97,7 @@ func (m *Message) AtMobiles(mobiles ...string) *Message {
 	return m
 }
 
+// 消息序列号
 func (m *Message) Marshaler() []byte {
 	b, _ := json.Marshal(m)
 	return b
