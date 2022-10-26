@@ -2,37 +2,38 @@ package juejin
 
 import (
 	"fmt"
-	"os"
 	"testing"
+
+	"github.com/nivin-studio/juejin-auto/utils"
 )
 
 func TestCheckIn(t *testing.T) {
-	juejin := New().SetCookie(os.Getenv("JUEJIN_COOKIE"))
+	juejin := New().SetCookie(utils.Env("JUEJIN_COOKIE", ``))
 
 	result := juejin.CheckIn().GetResult()
 
 	fmt.Print(result)
 }
 
-func TestLottery(t *testing.T) {
-	juejin := New().SetCookie(os.Getenv("JUEJIN_COOKIE"))
+func TestLotteryDraw(t *testing.T) {
+	juejin := New().SetCookie(utils.Env("JUEJIN_COOKIE", ``))
 
-	result := juejin.Lottery().GetResult()
-
-	fmt.Print(result)
-}
-
-func TestDipLucky(t *testing.T) {
-	juejin := New().SetCookie(os.Getenv("JUEJIN_COOKIE"))
-
-	result := juejin.DipLucky().GetResult()
+	result := juejin.LotteryDraw().GetResult()
 
 	fmt.Print(result)
 }
 
-func TestCollectBug(t *testing.T) {
-	juejin := New().SetCookie(os.Getenv("JUEJIN_COOKIE"))
+func TestLotteryDip(t *testing.T) {
+	juejin := New().SetCookie(utils.Env("JUEJIN_COOKIE", ``))
 
-	result := juejin.CollectBug().GetResult()
+	result := juejin.LotteryDip().GetResult()
+
+	fmt.Print(result)
+}
+
+func TestCollectBugs(t *testing.T) {
+	juejin := New().SetCookie(utils.Env("JUEJIN_COOKIE", ``))
+
+	result := juejin.CollectBugs().GetResult()
 	fmt.Print(result)
 }

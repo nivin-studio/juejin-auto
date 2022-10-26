@@ -4,8 +4,8 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"errors"
 	"fmt"
+	"log"
 	"net/url"
 	"time"
 
@@ -39,7 +39,7 @@ func (rb *Robot) sign(t int64, secret string) string {
 // 获取请求地址
 func (rb *Robot) GetUrl() (string, error) {
 	if rb.Webhook == "" {
-		return "", errors.New("钉钉机器人Webhook未设置")
+		return "", fmt.Errorf("钉钉机器人Webhook未设置")
 	}
 
 	if rb.Secret == "" {
@@ -82,6 +82,8 @@ func (rb *Robot) SendMessage(m *Message) error {
 	if err != nil {
 		return fmt.Errorf("消息发送失败: %s, 消息: %s", err, m.Marshaler())
 	}
+
+	log.Println("消息发送请求结果:", string(resp.Body()))
 
 	code := jsoniter.Get(resp.Body(), "errcode").ToInt()
 	if code != 0 {

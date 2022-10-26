@@ -1,30 +1,29 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	"github.com/nivin-studio/juejin-auto/dingtalk"
 	"github.com/nivin-studio/juejin-auto/juejin"
+	"github.com/nivin-studio/juejin-auto/utils"
 )
 
 func main() {
-	message := juejin.New().
-		SetCookie(os.Getenv("JUEJIN_COOKIE")).
+	msg := juejin.New().
+		SetCookie(utils.Env("JUEJIN_COOKIE", ``)).
 		CheckIn().
-		Lottery().
-		DipLucky().
-		CollectBug().
+		LotteryDraw().
+		LotteryDip().
+		CollectBugs().
 		GetResult()
 
-	robot := dingtalk.NewRobot().
-		SetWebhook(os.Getenv("DINGTALK_WEBHOOK")).
-		SetSecret(os.Getenv("DINGTALK_SECRET"))
-
-	err := robot.SendMessage(dingtalk.NewTextMessage(message))
+	err := dingtalk.NewRobot().
+		SetWebhook(utils.Env("DINGTALK_WEBHOOK", ``)).
+		SetSecret(utils.Env("DINGTALK_SECRET", ``)).
+		SendMessage(dingtalk.NewTextMessage(msg))
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
-	fmt.Println("Hello, 世界!")
+	log.Println("Hello, 世界!")
 }

@@ -1,14 +1,18 @@
 package juejin
 
 type Response struct {
-	ErrNo  int         `json:"err_no"`
-	ErrMsg string      `json:"err_msg"`
-	Data   interface{} `json:"data"`
+	ErrNo  int    `json:"err_no"`
+	ErrMsg string `json:"err_msg"`
 }
 
 type CheckIn struct {
 	IncrPoint int `json:"incr_point"`
 	SumPoint  int `json:"sum_point"`
+}
+
+type CheckInResp struct {
+	Response
+	Data CheckIn `json:"data"`
 }
 
 type LotteryDraw struct {
@@ -25,12 +29,12 @@ type LotteryDraw struct {
 	HistoryId       string `json:"history_id"`
 }
 
-type LotteryHistory struct {
-	LuckyUser []LuckyUser `json:"lotteries"`
-	Count     int         `json:"count"`
+type LotteryDrawResp struct {
+	Response
+	Data LotteryDraw `json:"data"`
 }
 
-type LuckyUser struct {
+type LotteryUser struct {
 	UserID            string        `json:"user_id"`
 	HistoryID         string        `json:"history_id"`
 	UserName          string        `json:"user_name"`
@@ -42,11 +46,24 @@ type LuckyUser struct {
 	DipLuckyUsers     []interface{} `json:"dip_lucky_users"`
 }
 
-type DipLucky struct {
+type LuckyUsersResp struct {
+	Response
+	Data struct {
+		LotteryUsers []LotteryUser `json:"lotteries"`
+		Count        int           `json:"count"`
+	} `json:"data"`
+}
+
+type LotteryDip struct {
 	DipAction  int  `json:"dip_action"`
 	HasDip     bool `json:"has_dip"`
 	TotalValue int  `json:"total_value"`
 	DipValue   int  `json:"dip_value"`
+}
+
+type LotteryDipResp struct {
+	Response
+	Data LotteryDip `json:"data"`
 }
 
 type Bug struct {
@@ -54,4 +71,9 @@ type Bug struct {
 	BugTime     int  `json:"bug_time"`
 	BugShowType int  `json:"bug_show_type"`
 	IsFirst     bool `json:"is_first"`
+}
+
+type NotCollectBugsResp struct {
+	Response
+	Data []Bug `json:"data"`
 }
