@@ -197,5 +197,5 @@ func (j *JueJin) CollectBugs() *JueJin {
 		sum += len
 	}
 
-	return j.AddResult(fmt.Sprintf("😊 Bug收集完成\n🐛 收集Bug: %d\n", sum))
+	return j.AddResult(fmt.Sprintf("😊 Bug收集完成\n🐛 收集Bug: %d", sum))
 }
